@@ -337,6 +337,53 @@
 
     /* Raise project content above bg layers */
     .pi{position:relative;z-index:1;}
+
+    /* ── ACTIVE NAV LINK ─────────────────────────── */
+    .n-links a.nav-on{color:var(--cyan);}
+    .n-links a.nav-on::after{width:100%;}
+
+    /* ── HOW IT WORKS ────────────────────────────── */
+    #howitworks{background:var(--d1);position:relative;overflow:hidden;}
+    #howitworks::before{
+      content:'';position:absolute;top:-300px;left:50%;transform:translateX(-50%);
+      width:900px;height:600px;
+      background:radial-gradient(ellipse,rgba(0,212,255,.03) 0%,transparent 65%);
+      pointer-events:none;
+    }
+    .hiw-top{text-align:center;margin-bottom:72px;}
+    .hiw-top .s-desc{max-width:540px;margin:0 auto;}
+    .hiw-cols{display:grid;grid-template-columns:1fr 1fr;gap:72px;}
+    .hiw-col-badge{
+      display:inline-flex;align-items:center;gap:8px;
+      font-size:.6875rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+      padding:6px 18px;border-radius:50px;margin-bottom:36px;
+    }
+    .hiw-col-badge.cy{background:rgba(0,212,255,.07);border:1px solid rgba(0,212,255,.2);color:var(--cyan);}
+    .hiw-col-badge.tl{background:rgba(0,196,180,.07);border:1px solid rgba(0,196,180,.2);color:var(--teal);}
+    .hiw-step{display:flex;gap:20px;position:relative;padding-bottom:40px;}
+    .hiw-step:last-child{padding-bottom:0;}
+    .hiw-spine{display:flex;flex-direction:column;align-items:center;flex-shrink:0;}
+    .hiw-num{
+      width:44px;height:44px;border-radius:50%;
+      border:1px solid rgba(0,212,255,.28);
+      background:var(--d3);
+      display:flex;align-items:center;justify-content:center;
+      font-family:'Space Grotesk',sans-serif;
+      font-size:.875rem;font-weight:700;color:var(--cyan);
+      flex-shrink:0;position:relative;z-index:1;
+    }
+    .hiw-num.tl{border-color:rgba(0,196,180,.28);color:var(--teal);}
+    .hiw-line{
+      width:1px;flex:1;margin:6px 0;
+      background:linear-gradient(to bottom,rgba(0,212,255,.2),rgba(0,212,255,.04));
+    }
+    .hiw-line.tl{background:linear-gradient(to bottom,rgba(0,196,180,.2),rgba(0,196,180,.04));}
+    .hiw-body{padding-top:9px;}
+    .hiw-stitle{font-size:.9375rem;font-weight:600;letter-spacing:-.01em;margin-bottom:7px;}
+    .hiw-sdesc{font-size:.8125rem;color:var(--ts);line-height:1.7;}
+    @media(max-width:768px){
+      .hiw-cols{grid-template-columns:1fr;gap:52px;}
+    }
   </style>
 </head>
 <body>
@@ -350,12 +397,13 @@
 
 <!-- Mobile menu -->
 <div class="mob" id="mob">
-  <a href="#problem" class="ml">Mission</a>
-  <a href="#riverix" class="ml">Riverix</a>
+  <a href="#problem"    class="ml">Mission</a>
+  <a href="#howitworks" class="ml">How It Works</a>
+  <a href="#riverix"    class="ml">Riverix</a>
   <a href="#skycleanse" class="ml">Sky Cleanse</a>
-  <a href="#sdg" class="ml">SDG Alignment</a>
-  <a href="#tech" class="ml">Technology</a>
-  <a href="#team" class="ml">Team</a>
+  <a href="#sdg"        class="ml">SDG Goals</a>
+  <a href="#tech"       class="ml">Technology</a>
+  <a href="#team"       class="ml">Team</a>
 </div>
 
 <!-- Scroll progress -->
@@ -370,6 +418,7 @@
   <div class="n-logo">Skycleanse</div>
   <ul class="n-links">
     <li><a href="#problem">Mission</a></li>
+    <li><a href="#howitworks">How It Works</a></li>
     <li><a href="#riverix">Riverix</a></li>
     <li><a href="#skycleanse">Sky Cleanse</a></li>
     <li><a href="#sdg">SDG Goals</a></li>
@@ -472,6 +521,132 @@
 <div class="dv" style="background:var(--d1)">
   <svg viewBox="0 0 1440 60" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M0,20 C360,60 720,0 1080,32 C1260,48 1380,16 1440,30 L1440,0 L0,0 Z" fill="var(--d0)"/>
+  </svg>
+</div>
+
+<!-- ── HOW IT WORKS ───────────────────────────────── -->
+<section id="howitworks">
+  <div class="ctn">
+    <div class="hiw-top">
+      <div class="badge reveal" style="justify-content:center">System Workflow</div>
+      <h2 class="s-title reveal d1">How Each Platform Works</h2>
+      <p class="s-desc reveal d2">
+        From deployment to data delivery — a precise operational sequence
+        runs aboard each platform, with both units working in parallel toward one mission.
+      </p>
+    </div>
+
+    <div class="hiw-cols">
+
+      <!-- ── Riverix steps ── -->
+      <div class="reveal d1">
+        <div class="hiw-col-badge cy">Riverix — Water Surface Robot</div>
+        <div>
+
+          <div class="hiw-step">
+            <div class="hiw-spine">
+              <div class="hiw-num">01</div>
+              <div class="hiw-line"></div>
+            </div>
+            <div class="hiw-body">
+              <div class="hiw-stitle">Mission Planning</div>
+              <p class="hiw-sdesc">GPS waypoints are uploaded via the web-based ground control station before departure. The operator defines target zones, pollution treatment coordinates, and the return-home location.</p>
+            </div>
+          </div>
+
+          <div class="hiw-step">
+            <div class="hiw-spine">
+              <div class="hiw-num">02</div>
+              <div class="hiw-line"></div>
+            </div>
+            <div class="hiw-body">
+              <div class="hiw-stitle">Autonomous Navigation</div>
+              <p class="hiw-sdesc">The ESP32 calculates heading error using GPS coordinates and IMU data from the MPU6050 gyroscope and HMC5883L compass. A PID controller continuously corrects direction. Ultrasonic sensors on three sides detect and route around obstacles in real time.</p>
+            </div>
+          </div>
+
+          <div class="hiw-step">
+            <div class="hiw-spine">
+              <div class="hiw-num">03</div>
+              <div class="hiw-line"></div>
+            </div>
+            <div class="hiw-body">
+              <div class="hiw-stitle">Environmental Sensing</div>
+              <p class="hiw-sdesc">pH, TDS, turbidity, and temperature sensors sample the water body continuously at every point along the route. Readings are processed onboard and packaged with GPS coordinates for transmission.</p>
+            </div>
+          </div>
+
+          <div class="hiw-step">
+            <div class="hiw-spine">
+              <div class="hiw-num">04</div>
+            </div>
+            <div class="hiw-body">
+              <div class="hiw-stitle">Treatment &amp; Live Telemetry</div>
+              <p class="hiw-sdesc">At programmed waypoints, the water treatment pump activates autonomously to deploy solution. All sensor data, GPS position, obstacle distances, and motor status are streamed live via ESP-NOW to the ground dashboard — visible from any browser on the same network.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── Sky Cleanse steps ── -->
+      <div class="reveal d2">
+        <div class="hiw-col-badge tl">Sky Cleanse — Environmental Drone</div>
+        <div>
+
+          <div class="hiw-step">
+            <div class="hiw-spine">
+              <div class="hiw-num tl">01</div>
+              <div class="hiw-line tl"></div>
+            </div>
+            <div class="hiw-body">
+              <div class="hiw-stitle">Aerial Deployment</div>
+              <p class="hiw-sdesc">The drone takes off and follows a programmed flight path over target areas — agricultural fields, industrial zones, or urban environments. Manual override via RC transmitter is always available for repositioning or emergency landing.</p>
+            </div>
+          </div>
+
+          <div class="hiw-step">
+            <div class="hiw-spine">
+              <div class="hiw-num tl">02</div>
+              <div class="hiw-line tl"></div>
+            </div>
+            <div class="hiw-body">
+              <div class="hiw-stitle">Atmospheric Monitoring</div>
+              <p class="hiw-sdesc">All five sensors operate simultaneously in flight: PMS7003 captures PM1.0, PM2.5, and PM10 particle counts; MQ-7 and MQ-135 detect CO and harmful gas concentrations; DHT-22 logs temperature and humidity; MH-Z19E tracks CO₂ as a greenhouse gas indicator.</p>
+            </div>
+          </div>
+
+          <div class="hiw-step">
+            <div class="hiw-spine">
+              <div class="hiw-num tl">03</div>
+              <div class="hiw-line tl"></div>
+            </div>
+            <div class="hiw-body">
+              <div class="hiw-stitle">Active Air Purification</div>
+              <p class="hiw-sdesc">A fan mounted inside the 3D-printed filter housing draws ambient air through the MOXI filter, capturing fine particulate matter and airborne pollutants as the drone flies. The housing is fully modular — the filter element unscrews for field replacement in seconds.</p>
+            </div>
+          </div>
+
+          <div class="hiw-step">
+            <div class="hiw-spine">
+              <div class="hiw-num tl">04</div>
+            </div>
+            <div class="hiw-body">
+              <div class="hiw-stitle">Precision Crop Fertilization</div>
+              <p class="hiw-sdesc">When activated manually, the 5V DC pump draws liquid fertilizer from the onboard container and delivers it through the nozzle outlet directly over target crop rows. Targeted delivery reduces chemical runoff and excess fertilizer waste significantly compared to conventional methods.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="dv" style="background:var(--d1)">
+  <svg viewBox="0 0 1440 60" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,30 C480,60 960,0 1440,40 L1440,60 L0,60 Z" fill="var(--d0)"/>
   </svg>
 </div>
 
@@ -1182,11 +1357,13 @@
     </div>
     <ul class="flinks">
       <li><a href="#problem">Mission</a></li>
+      <li><a href="#howitworks">How It Works</a></li>
       <li><a href="#riverix">Riverix</a></li>
       <li><a href="#skycleanse">Sky Cleanse</a></li>
       <li><a href="#sdg">SDG Goals</a></li>
       <li><a href="#tech">Technology</a></li>
       <li><a href="#team">Team</a></li>
+      <li><a href="https://github.com/tamimhossain11/skycleanse" target="_blank" rel="noopener" style="color:var(--cyan);">GitHub</a></li>
     </ul>
     <div class="fcp">&copy; 2025 Shreyan Chakraborty &amp; Farhan Saif. All rights reserved.</div>
   </div>
@@ -1361,6 +1538,20 @@
       c.style.transform = `translateY(-5px) rotateX(${-y*7}deg) rotateY(${x*7}deg)`;
     });
     c.addEventListener('mouseleave', () => { c.style.transform = ''; });
+  });
+
+  /* Active nav highlighting on scroll */
+  const navAs = document.querySelectorAll('.n-links a');
+  const secObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navAs.forEach(a => a.classList.toggle('nav-on', a.getAttribute('href') === `#${e.target.id}`));
+      }
+    });
+  }, { threshold: 0.25, rootMargin: '-64px 0px -40% 0px' });
+  ['problem','howitworks','riverix','skycleanse','sdg','tech','team'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) secObs.observe(el);
   });
 
   /* Smooth anchor scrolls */
