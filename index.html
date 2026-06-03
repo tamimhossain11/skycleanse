@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Skycleanse — Riverix &amp; Sky Cleanse</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    /* ── VARIABLES ─────────────────────────────────── */
+    :root{
+      --d0:#020810; --d1:#050f1c; --d2:#081526; --d3:#0d1f38; --d4:#122542;
+      --cyan:#00d4ff; --blue:#1a7fe6; --teal:#00c4b4;
+      --sdg3:#4C9F38; --sdg6:#26BDE2; --sdg11:#FD9D24; --sdg13:#3F7E44; --sdg15:#56C02B;
+      --white:#fff;
+      --tp:#eef4f9; --ts:#95b0c6; --tm:#4e6a82;
+      --border:rgba(0,212,255,.1);
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    html{scroll-behavior:smooth;font-size:16px;}
+    body{font-family:'Inter',system-ui,sans-serif;background:var(--d0);color:var(--tp);overflow-x:hidden;line-height:1.7;}
+    h1,h2,h3,h4{font-family:'Space Grotesk',system-ui,sans-serif;line-height:1.2;}
+    a{text-decoration:none;color:inherit;}
+
+    /* ── PRELOADER ─────────────────────────────────── */
+    #pre{
+      position:fixed;inset:0;background:var(--d0);z-index:9999;
+      display:flex;align-items:center;justify-content:center;flex-direction:column;gap:28px;
+      transition:opacity .9s ease,visibility .9s ease;
+    }
+    #pre.gone{opacity:0;visibility:hidden;pointer-events:none;}
+    .pre-wm{
+      font-family:'Space Grotesk',sans-serif;font-size:clamp(2rem,7vw,3.5rem);
+      font-weight:700;letter-spacing:-.04em;
+      background:linear-gradient(135deg,#fff 30%,var(--cyan));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+      clip-path:inset(0 100% 0 0);
+      animation:revText .9s cubic-bezier(.4,0,.2,1) .2s forwards;
+    }
+    .pre-track{width:200px;height:1px;background:rgba(0,212,255,.1);border-radius:1px;overflow:hidden;}
+    .pre-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--cyan),var(--teal));width:0;animation:fillB 1.6s cubic-bezier(.4,0,.2,1) .3s forwards;}
+    .pre-sub{font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--tm);opacity:0;animation:fadeUp .5s ease .7s forwards;}
+    @keyframes revText{from{clip-path:inset(0 100% 0 0);}to{clip-path:inset(0 0% 0 0);}}
+    @keyframes fillB{from{width:0;}to{width:100%;}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+    /* ── SCROLL PROGRESS ───────────────────────────── */
+    #spb{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--cyan),var(--teal));z-index:1002;width:0;pointer-events:none;}
+
+    /* ── CURSOR ────────────────────────────────────── */
+    .cur{position:fixed;top:0;left:0;width:10px;height:10px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9998;mix-blend-mode:screen;}
+    .cur-r{position:fixed;top:0;left:0;width:36px;height:36px;border:1px solid rgba(0,212,255,.35);border-radius:50%;pointer-events:none;z-index:9997;transition:width .3s,height .3s;}
+
+    /* ── NAV ───────────────────────────────────────── */
+    nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:26px 64px;display:flex;align-items:center;justify-content:space-between;transition:all .5s cubic-bezier(.4,0,.2,1);}
+    nav.sc{background:rgba(5,15,28,.9);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);padding:16px 64px;border-bottom:1px solid var(--border);}
+    .n-logo{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:700;letter-spacing:-.02em;background:linear-gradient(135deg,#fff 40%,var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .n-links{display:flex;gap:40px;list-style:none;}
+    .n-links a{font-size:.75rem;font-weight:500;color:var(--ts);letter-spacing:.08em;text-transform:uppercase;transition:color .3s;position:relative;}
+    .n-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;background:var(--cyan);transition:width .35s;}
+    .n-links a:hover{color:var(--cyan);}
+    .n-links a:hover::after{width:100%;}
+    .n-ham{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:6px;}
+    .n-ham span{display:block;width:22px;height:1.5px;background:var(--tp);border-radius:2px;transition:all .35s;}
+    .n-ham.op span:nth-child(1){transform:translateY(6.5px) rotate(45deg);}
+    .n-ham.op span:nth-child(2){opacity:0;transform:scaleX(0);}
+    .n-ham.op span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);}
+
+    /* ── MOBILE MENU ───────────────────────────────── */
+    .mob{position:fixed;inset:0;background:rgba(5,15,28,.97);backdrop-filter:blur(24px);z-index:998;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:36px;opacity:0;pointer-events:none;transition:opacity .4s;}
+    .mob.op{opacity:1;pointer-events:all;}
+    .mob a{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,5vw,2.25rem);font-weight:600;color:var(--ts);transition:color .3s;}
+    .mob a:hover{color:var(--cyan);}
+    @media(max-width:768px){.n-ham{display:flex;}.n-links{display:none;}}
+
+    /* ── SECTIONS ──────────────────────────────────── */
+    section{padding:120px 64px;}
+    .ctn{max-width:1200px;margin:0 auto;}
+    .badge{display:inline-flex;align-items:center;gap:10px;font-size:.6875rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan);margin-bottom:18px;}
+    .badge::before{content:'';width:26px;height:2px;background:var(--cyan);border-radius:2px;}
+    .badge.tl{color:var(--teal);}
+    .badge.tl::before{background:var(--teal);}
+    .s-title{font-size:clamp(2rem,4.5vw,3.25rem);font-weight:700;letter-spacing:-.025em;margin-bottom:18px;line-height:1.1;}
+    .s-desc{font-size:1.0625rem;color:var(--ts);line-height:1.85;}
+    .reveal{opacity:0;transform:translateY(40px);transition:opacity .85s cubic-bezier(.4,0,.2,1),transform .85s cubic-bezier(.4,0,.2,1);}
+    .reveal.in{opacity:1;transform:translateY(0);}
+    .d1{transition-delay:.1s;}.d2{transition-delay:.2s;}.d3{transition-delay:.3s;}.d4{transition-delay:.4s;}.d5{transition-delay:.5s;}.d6{transition-delay:.6s;}
+
+    /* ── HERO ──────────────────────────────────────── */
+    #hero{position:relative;height:100vh;min-height:700px;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;}
+    #hc{position:absolute;inset:0;width:100%;height:100%;}
+    .h-wrap{position:relative;z-index:2;max-width:920px;padding:0 24px;}
+    .h-competition{
+      display:inline-flex;align-items:center;gap:12px;
+      padding:8px 20px;border-radius:50px;
+      background:rgba(0,212,255,.07);border:1px solid rgba(0,212,255,.2);
+      font-size:.6875rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--cyan);
+      margin-bottom:32px;
+      opacity:0;animation:fadeUp .8s ease .2s forwards;
+    }
+    .h-dot{width:6px;height:6px;background:var(--cyan);border-radius:50%;box-shadow:0 0 8px var(--cyan);animation:blink 2s ease-in-out infinite;}
+    .h-title{font-size:clamp(3.5rem,9vw,8rem);font-weight:700;letter-spacing:-.04em;line-height:1;margin-bottom:28px;opacity:0;animation:fadeUp .8s ease .4s forwards;}
+    .h-title .gt{background:linear-gradient(135deg,#fff 20%,var(--cyan) 60%,var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .h-sub{font-size:clamp(.9375rem,2.2vw,1.125rem);color:var(--ts);max-width:580px;margin:0 auto 48px;font-weight:300;line-height:1.85;opacity:0;animation:fadeUp .8s ease .6s forwards;}
+    .h-tags{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:48px;opacity:0;animation:fadeUp .8s ease .75s forwards;}
+    .h-tag{padding:6px 16px;border-radius:50px;font-size:.6875rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;}
+    .h-tag.c{background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);color:var(--cyan);}
+    .h-tag.t{background:rgba(0,196,180,.08);border:1px solid rgba(0,196,180,.2);color:var(--teal);}
+    .h-acts{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;opacity:0;animation:fadeUp .8s ease .9s forwards;}
+    .btn-p{padding:15px 40px;background:linear-gradient(135deg,var(--blue),var(--cyan));border:none;border-radius:50px;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:.9375rem;font-weight:600;cursor:pointer;position:relative;overflow:hidden;transition:transform .3s,box-shadow .3s;}
+    .btn-p::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--cyan),var(--teal));opacity:0;transition:opacity .4s;}
+    .btn-p:hover::before{opacity:1;}
+    .btn-p:hover{transform:translateY(-3px);box-shadow:0 16px 48px rgba(0,212,255,.3);}
+    .btn-p span{position:relative;z-index:1;}
+    .btn-g{padding:15px 40px;background:transparent;border:1px solid rgba(0,212,255,.3);border-radius:50px;color:var(--tp);font-family:'Space Grotesk',sans-serif;font-size:.9375rem;font-weight:500;cursor:pointer;transition:all .3s;}
+    .btn-g:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(0,212,255,.04);transform:translateY(-3px);}
+    .sc-cue{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;opacity:0;animation:fadeUp .8s ease 1.3s forwards;}
+    .sc-cue span{font-size:.575rem;letter-spacing:.2em;text-transform:uppercase;color:var(--tm);}
+    .sc-bar{width:1px;height:52px;background:linear-gradient(to bottom,var(--cyan),transparent);animation:scPulse 2.2s ease-in-out infinite;}
+    .hw{position:absolute;bottom:-1px;left:0;right:0;z-index:1;}
+    @keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+    @keyframes scPulse{0%,100%{opacity:.25;}50%{opacity:1;}}
+
+    /* ── PROBLEM STATEMENT ─────────────────────────── */
+    #problem{background:var(--d1);position:relative;overflow:hidden;}
+    #problem::before{content:'';position:absolute;top:-300px;right:-300px;width:700px;height:700px;background:radial-gradient(circle,rgba(0,212,255,.03) 0%,transparent 70%);pointer-events:none;}
+    .prob-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;}
+    .prob-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    .prob-card{background:var(--d3);border:1px solid var(--border);border-radius:14px;padding:24px;transition:border-color .3s,transform .3s;}
+    .prob-card:hover{border-color:rgba(0,212,255,.25);transform:translateY(-3px);}
+    .prob-card-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;}
+    .prob-card-icon svg{width:20px;height:20px;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;fill:none;}
+    .prob-card h4{font-size:.9375rem;font-weight:600;margin-bottom:8px;letter-spacing:-.01em;}
+    .prob-card p{font-size:.8125rem;color:var(--ts);line-height:1.65;}
+
+    /* ── DIVIDERS ──────────────────────────────────── */
+    .dv{width:100%;line-height:0;display:block;}
+    .dv svg{display:block;}
+
+    /* ── PROJECT SECTIONS ──────────────────────────── */
+    .ps{padding:0;overflow:hidden;position:relative;}
+    .pi{max-width:1200px;margin:0 auto;padding:120px 64px;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;}
+    .pi.flip{direction:rtl;}
+    .pi.flip>*{direction:ltr;}
+    .ptag{display:inline-block;padding:6px 18px;border-radius:50px;font-size:.6875rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:24px;}
+    .ptag.cy{background:rgba(0,212,255,.07);border:1px solid rgba(0,212,255,.2);color:var(--cyan);}
+    .ptag.tl{background:rgba(0,196,180,.07);border:1px solid rgba(0,196,180,.2);color:var(--teal);}
+    .ptitle{font-size:clamp(1.875rem,3.5vw,2.75rem);font-weight:700;letter-spacing:-.025em;margin-bottom:18px;}
+    .pdesc{font-size:1rem;color:var(--ts);line-height:1.85;margin-bottom:36px;}
+
+    /* Spec grid */
+    .spec-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:36px;}
+    .spec-item{display:flex;align-items:flex-start;gap:10px;font-size:.8125rem;color:var(--ts);}
+    .spec-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:6px;}
+    .spec-dot.cy{background:var(--cyan);box-shadow:0 0 7px rgba(0,212,255,.6);}
+    .spec-dot.tl{background:var(--teal);box-shadow:0 0 7px rgba(0,196,180,.6);}
+
+    /* Sensor chips */
+    .sensor-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:28px;}
+    .chip{padding:5px 12px;border-radius:50px;font-size:.6875rem;font-weight:600;letter-spacing:.08em;background:var(--d3);border:1px solid var(--border);}
+    .chip.cy{border-color:rgba(0,212,255,.22);color:var(--cyan);}
+    .chip.tl{border-color:rgba(0,196,180,.22);color:var(--teal);}
+
+    /* Mode badges */
+    .modes{display:flex;gap:10px;flex-wrap:wrap;}
+    .mode-tag{display:flex;align-items:center;gap:8px;padding:10px 16px;background:var(--d3);border:1px solid var(--border);border-radius:10px;font-size:.8125rem;font-weight:500;color:var(--ts);}
+    .mode-dot{width:7px;height:7px;border-radius:50%;}
+    .mode-dot.cy{background:var(--cyan);box-shadow:0 0 8px rgba(0,212,255,.6);}
+    .mode-dot.tl{background:var(--teal);box-shadow:0 0 8px rgba(0,196,180,.6);}
+
+    /* Visual boxes */
+    .vbox{position:relative;width:100%;padding-top:85%;border-radius:20px;overflow:hidden;background:var(--d3);border:1px solid var(--border);}
+    .vbox svg{position:absolute;inset:0;width:100%;height:100%;}
+
+    /* Sensor detail cards */
+    .sensor-cards{display:grid;grid-template-columns:1fr;gap:8px;margin-top:28px;}
+    .sc-card{display:flex;align-items:center;gap:14px;padding:12px 16px;background:var(--d4);border:1px solid var(--border);border-radius:10px;font-size:.8125rem;}
+    .sc-card .sc-name{font-weight:600;color:var(--tp);min-width:90px;font-size:.75rem;}
+    .sc-card .sc-what{color:var(--ts);flex:1;}
+
+    /* ── SDG SECTION ───────────────────────────────── */
+    #sdg{background:var(--d1);padding:120px 64px;}
+    .sdg-head{text-align:center;margin-bottom:64px;}
+    .sdg-head .s-desc{max-width:560px;margin:0 auto;}
+    .sdg-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;}
+    .sdg-card{border-radius:16px;padding:28px 20px;text-align:center;border:1px solid transparent;transition:transform .3s,box-shadow .3s;}
+    .sdg-card:hover{transform:translateY(-5px);box-shadow:0 20px 60px rgba(0,0,0,.4);}
+    .sdg-num{font-family:'Space Grotesk',sans-serif;font-size:2.5rem;font-weight:700;line-height:1;margin-bottom:10px;}
+    .sdg-icon{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;}
+    .sdg-icon svg{width:26px;height:26px;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;}
+    .sdg-goal{font-size:.6875rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;}
+    .sdg-desc{font-size:.75rem;color:var(--ts);line-height:1.6;}
+    .sdg-tag{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-top:10px;}
+    .sdg-chip{font-size:.5625rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:50px;border:1px solid;}
+
+    /* ── TECHNOLOGY ────────────────────────────────── */
+    #tech{background:var(--d0);}
+    .tech-head{text-align:center;margin-bottom:64px;}
+    .tech-head .s-desc{max-width:540px;margin:0 auto;}
+    .tech-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+    .tc{background:var(--d3);border:1px solid var(--border);border-radius:16px;padding:32px 28px;position:relative;overflow:hidden;transition:transform .4s,border-color .4s,box-shadow .4s;cursor:default;}
+    .tc::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:0;transition:opacity .4s;}
+    .tc:hover::before{opacity:1;}
+    .tc:hover{border-color:rgba(0,212,255,.22);transform:translateY(-4px);box-shadow:0 24px 64px rgba(0,0,0,.4);}
+    .ti{width:48px;height:48px;background:linear-gradient(135deg,rgba(0,212,255,.08),rgba(26,127,230,.08));border:1px solid rgba(0,212,255,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;}
+    .ti svg{width:22px;height:22px;stroke:var(--cyan);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;}
+    .tn{font-size:1.0625rem;font-weight:600;letter-spacing:-.01em;margin-bottom:8px;}
+    .td{font-size:.875rem;color:var(--ts);line-height:1.75;}
+
+    /* ── TEAM ──────────────────────────────────────── */
+    #team{background:var(--d1);}
+    .team-head{text-align:center;margin-bottom:64px;}
+    .team-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;max-width:700px;margin:0 auto;}
+    .tm-card{background:var(--d3);border:1px solid var(--border);border-radius:20px;padding:48px 36px;text-align:center;transition:border-color .3s,transform .3s;}
+    .tm-card:hover{border-color:rgba(0,212,255,.25);transform:translateY(-4px);}
+    .tm-avatar{width:80px;height:80px;border-radius:50%;border:2px solid rgba(0,212,255,.25);background:linear-gradient(135deg,rgba(0,212,255,.1),rgba(26,127,230,.1));display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:700;color:var(--cyan);}
+    .tm-name{font-size:1.125rem;font-weight:600;letter-spacing:-.01em;margin-bottom:6px;}
+    .tm-role{font-size:.8125rem;color:var(--ts);}
+    .tm-role span{color:var(--cyan);}
+
+    /* ── IMPACT ────────────────────────────────────── */
+    #impact{background:var(--d0);text-align:center;}
+    .imp-head{margin-bottom:72px;}
+    .imp-head .s-desc{max-width:520px;margin:0 auto;}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:var(--border);border-radius:24px;overflow:hidden;}
+    .st{background:var(--d2);padding:56px 28px;text-align:center;}
+    .st-n{font-family:'Space Grotesk',sans-serif;font-size:clamp(2.5rem,5vw,4rem);font-weight:700;letter-spacing:-.04em;background:linear-gradient(135deg,#fff 30%,var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin-bottom:10px;}
+    .st-l{font-size:.8125rem;color:var(--ts);font-weight:500;letter-spacing:.02em;line-height:1.5;}
+
+    /* ── FOOTER ────────────────────────────────────── */
+    footer{background:var(--d1);border-top:1px solid var(--border);padding:60px 64px;}
+    .fi{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:40px;flex-wrap:wrap;}
+    .fl{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:700;letter-spacing:-.02em;background:linear-gradient(135deg,#fff,var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .ft{font-size:.8125rem;color:var(--tm);margin-top:6px;}
+    .flinks{display:flex;gap:32px;list-style:none;}
+    .flinks a{font-size:.8125rem;color:var(--ts);transition:color .3s;}
+    .flinks a:hover{color:var(--cyan);}
+    .fcp{font-size:.8125rem;color:var(--tm);}
+
+    /* ── KEYFRAMES ─────────────────────────────────── */
+    @keyframes spin{to{transform:rotate(360deg);}}
+    @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+
+    /* ── RESPONSIVE ────────────────────────────────── */
+    @media(max-width:1100px){
+      .sdg-grid{grid-template-columns:repeat(3,1fr);}
+    }
+    @media(max-width:1024px){
+      section{padding:88px 40px;}
+      .prob-grid,.pi{grid-template-columns:1fr;gap:52px;}
+      .pi{padding:88px 40px;}
+      .pi.flip{direction:ltr;}
+      .tech-grid{grid-template-columns:repeat(2,1fr);}
+      .stats{grid-template-columns:repeat(2,1fr);}
+      .sdg-grid{grid-template-columns:repeat(2,1fr);}
+    }
+    @media(max-width:768px){
+      nav{padding:20px 24px;}
+      nav.sc{padding:14px 24px;}
+      section{padding:72px 24px;}
+      .pi{padding:72px 24px;}
+      .spec-grid,.prob-cards,.team-grid{grid-template-columns:1fr;}
+      .tech-grid{grid-template-columns:1fr;}
+      .stats{grid-template-columns:1fr 1fr;}
+      .sdg-grid{grid-template-columns:1fr 1fr;}
+      footer{padding:48px 24px;}
+      .fi{flex-direction:column;text-align:center;}
+      .flinks{flex-wrap:wrap;justify-content:center;gap:20px;}
+    }
+    @media(max-width:480px){
+      .sdg-grid{grid-template-columns:1fr;}
+      .stats{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- Preloader -->
+<div id="pre">
+  <div class="pre-wm">Skycleanse</div>
+  <div class="pre-track"><div class="pre-fill"></div></div>
+  <div class="pre-sub">Innovation World Cup — Environmental Technology</div>
+</div>
+
+<!-- Mobile menu -->
+<div class="mob" id="mob">
+  <a href="#problem" class="ml">Mission</a>
+  <a href="#riverix" class="ml">Riverix</a>
+  <a href="#skycleanse" class="ml">Sky Cleanse</a>
+  <a href="#sdg" class="ml">SDG Alignment</a>
+  <a href="#tech" class="ml">Technology</a>
+  <a href="#team" class="ml">Team</a>
+</div>
+
+<!-- Scroll progress -->
+<div id="spb"></div>
+
+<!-- Cursor -->
+<div class="cur" id="cur"></div>
+<div class="cur-r" id="curR"></div>
+
+<!-- ── NAVIGATION ─────────────────────────────────── -->
+<nav id="nav">
+  <div class="n-logo">Skycleanse</div>
+  <ul class="n-links">
+    <li><a href="#problem">Mission</a></li>
+    <li><a href="#riverix">Riverix</a></li>
+    <li><a href="#skycleanse">Sky Cleanse</a></li>
+    <li><a href="#sdg">SDG Goals</a></li>
+    <li><a href="#tech">Technology</a></li>
+    <li><a href="#team">Team</a></li>
+  </ul>
+  <div class="n-ham" id="ham"><span></span><span></span><span></span></div>
+</nav>
+
+<!-- ── HERO ───────────────────────────────────────── -->
+<section id="hero">
+  <canvas id="hc"></canvas>
+  <div class="h-wrap">
+    <div class="h-competition">
+      <div class="h-dot"></div>
+      Innovation World Cup — Competition Showcase
+    </div>
+    <h1 class="h-title"><span class="gt">SKYCLEANSE</span></h1>
+    <p class="h-sub">
+      Two autonomous systems. One mission. Purifying our waterways with
+      <strong style="color:var(--cyan);font-weight:600;">Riverix</strong> and cleansing our atmosphere with
+      <strong style="color:var(--teal);font-weight:600;">Sky Cleanse</strong> — because the planet cannot wait.
+    </p>
+    <div class="h-tags">
+      <div class="h-tag c">Autonomous Navigation</div>
+      <div class="h-tag t">Air Purification</div>
+      <div class="h-tag c">Water Quality Monitoring</div>
+      <div class="h-tag t">Smart Agriculture</div>
+      <div class="h-tag c">Real-Time Telemetry</div>
+    </div>
+    <div class="h-acts">
+      <button class="btn-p" onclick="document.getElementById('riverix').scrollIntoView({behavior:'smooth'})">
+        <span>Explore Projects</span>
+      </button>
+      <button class="btn-g" onclick="document.getElementById('problem').scrollIntoView({behavior:'smooth'})">
+        The Problem We Solve
+      </button>
+    </div>
+  </div>
+  <div class="sc-cue"><span>Scroll</span><div class="sc-bar"></div></div>
+  <div class="hw">
+    <svg viewBox="0 0 1440 80" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,40 C240,80 480,0 720,40 C960,80 1200,10 1440,40 L1440,80 L0,80 Z" fill="#050f1c"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ── PROBLEM STATEMENT ──────────────────────────── -->
+<section id="problem" style="background:var(--d1);">
+  <div class="ctn">
+    <div class="prob-grid">
+      <div>
+        <div class="badge reveal">The Problem We Solve</div>
+        <h2 class="s-title reveal d1">Our Planet Is Facing a Crisis It Cannot Ignore</h2>
+        <p class="s-desc reveal d2">
+          Water bodies worldwide are choked with pollution, debris, and toxic runoff — while the air
+          above our cities carries invisible threats: particulate matter, carbon monoxide, greenhouse gases.
+          Manual intervention is slow, expensive, and inconsistent. Skycleanse was built to change that.
+        </p>
+        <p class="s-desc reveal d3" style="margin-top:18px;">
+          By deploying both an autonomous aquatic vessel and a sensor-equipped aerial drone, we
+          address water and air pollution simultaneously — collecting real-time data and acting on it
+          directly in the field.
+        </p>
+      </div>
+      <div class="prob-cards reveal d2">
+        <div class="prob-card">
+          <div class="prob-card-icon" style="background:rgba(0,212,255,.07);border:1px solid rgba(0,212,255,.15);">
+            <svg style="stroke:var(--cyan)" viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+          </div>
+          <h4>Water Pollution</h4>
+          <p>Rivers, lakes, and canals accumulate plastics, organic debris, and chemical runoff at an alarming rate.</p>
+        </div>
+        <div class="prob-card">
+          <div class="prob-card-icon" style="background:rgba(0,196,180,.07);border:1px solid rgba(0,196,180,.15);">
+            <svg style="stroke:var(--teal)" viewBox="0 0 24 24"><path d="M8 2c0 0-4 4-4 10a8 8 0 1 0 16 0c0-6-4-10-4-10"/><path d="M12 8v8"/></svg>
+          </div>
+          <h4>Air Quality Crisis</h4>
+          <p>PM2.5, carbon monoxide, and CO₂ levels in urban and agricultural areas cause lasting health damage.</p>
+        </div>
+        <div class="prob-card">
+          <div class="prob-card-icon" style="background:rgba(0,212,255,.07);border:1px solid rgba(0,212,255,.15);">
+            <svg style="stroke:var(--cyan)" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </div>
+          <h4>Manual Monitoring Fails</h4>
+          <p>Human-operated monitoring is infrequent, inconsistent, and unable to cover large geographic areas.</p>
+        </div>
+        <div class="prob-card">
+          <div class="prob-card-icon" style="background:rgba(0,196,180,.07);border:1px solid rgba(0,196,180,.15);">
+            <svg style="stroke:var(--teal)" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </div>
+          <h4>Agricultural Waste</h4>
+          <p>Excess fertilizer use degrades soil and waterways. Precision deployment is needed to reduce waste.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="dv" style="background:var(--d1)">
+  <svg viewBox="0 0 1440 60" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,20 C360,60 720,0 1080,32 C1260,48 1380,16 1440,30 L1440,0 L0,0 Z" fill="var(--d0)"/>
+  </svg>
+</div>
+
+<!-- ── RIVERIX ─────────────────────────────────────── -->
+<div id="riverix" class="ps" style="background:var(--d0)">
+  <div class="pi">
+
+    <!-- Left: Content -->
+    <div>
+      <div class="ptag cy reveal">Project 01 — Riverix</div>
+      <h2 class="ptitle reveal d1">Semi-Autonomous Water Surface Robot</h2>
+      <p class="pdesc reveal d2">
+        Riverix is an advanced Autonomous Surface Vehicle (ASV) built around an ESP32 microcontroller.
+        It navigates polluted waterways — rivers, lakes, ponds, and canals — collecting real-time
+        environmental data and autonomously deploying water treatment solutions. It operates in both
+        manual RC and autonomous GPS waypoint modes, with live telemetry streamed to a web dashboard.
+      </p>
+
+      <!-- Operating modes -->
+      <div class="reveal d2" style="margin-bottom:28px;">
+        <div style="font-size:.75rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ts);margin-bottom:12px;">Operating Modes</div>
+        <div class="modes">
+          <div class="mode-tag"><div class="mode-dot cy"></div>Manual RC (FlySky)</div>
+          <div class="mode-tag"><div class="mode-dot cy"></div>Autonomous GPS</div>
+          <div class="mode-tag"><div class="mode-dot cy"></div>Return-to-Home</div>
+          <div class="mode-tag"><div class="mode-dot cy"></div>Web Mission Control</div>
+        </div>
+      </div>
+
+      <!-- Sensors -->
+      <div class="reveal d3" style="margin-bottom:10px;">
+        <div style="font-size:.75rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ts);margin-bottom:12px;">Water Quality Sensors</div>
+        <div class="sensor-row">
+          <div class="chip cy">pH Sensor</div>
+          <div class="chip cy">TDS Sensor</div>
+          <div class="chip cy">Turbidity</div>
+          <div class="chip cy">Temperature</div>
+        </div>
+      </div>
+
+      <!-- Sensor detail cards -->
+      <div class="sensor-cards reveal d3">
+        <div class="sc-card">
+          <div class="spec-dot cy" style="width:7px;height:7px;border-radius:50%;flex-shrink:0;"></div>
+          <div class="sc-name">pH Sensor</div>
+          <div class="sc-what">Measures water acidity / alkalinity — detects chemical contamination</div>
+        </div>
+        <div class="sc-card">
+          <div class="spec-dot cy" style="width:7px;height:7px;border-radius:50%;flex-shrink:0;"></div>
+          <div class="sc-name">TDS Sensor</div>
+          <div class="sc-what">Total Dissolved Solids — water purity, salinity, pollution severity</div>
+        </div>
+        <div class="sc-card">
+          <div class="spec-dot cy" style="width:7px;height:7px;border-radius:50%;flex-shrink:0;"></div>
+          <div class="sc-name">Turbidity</div>
+          <div class="sc-what">Measures water clarity and suspended particle density</div>
+        </div>
+        <div class="sc-card">
+          <div class="spec-dot cy" style="width:7px;height:7px;border-radius:50%;flex-shrink:0;"></div>
+          <div class="sc-name">Temperature</div>
+          <div class="sc-what">Aquatic ecosystem monitoring and chemical process analysis</div>
+        </div>
+      </div>
+
+      <!-- Key features -->
+      <div class="spec-grid reveal d4" style="margin-top:28px;">
+        <div class="spec-item"><div class="spec-dot cy"></div>GPS Waypoint Navigation + IMU Fusion</div>
+        <div class="spec-item"><div class="spec-dot cy"></div>Ultrasonic Obstacle Avoidance (3-axis)</div>
+        <div class="spec-item"><div class="spec-dot cy"></div>ESP-NOW Real-Time Telemetry</div>
+        <div class="spec-item"><div class="spec-dot cy"></div>Web-Based Ground Control Station</div>
+        <div class="spec-item"><div class="spec-dot cy"></div>PID Heading Correction System</div>
+        <div class="spec-item"><div class="spec-dot cy"></div>Automated Water Treatment Pump</div>
+        <div class="spec-item"><div class="spec-dot cy"></div>MPU6050 + HMC5883L Navigation</div>
+        <div class="spec-item"><div class="spec-dot cy"></div>Dual-Motor Differential Steering</div>
+      </div>
+    </div>
+
+    <!-- Right: Visual -->
+    <div class="reveal d2">
+      <div class="vbox">
+        <svg viewBox="0 0 480 408" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="wg" cx="50%" cy="65%" r="75%">
+              <stop offset="0%" stop-color="#041420"/>
+              <stop offset="100%" stop-color="#020810"/>
+            </radialGradient>
+            <linearGradient id="hullG" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#1a3a6b"/>
+              <stop offset="100%" stop-color="#0d2045"/>
+            </linearGradient>
+            <linearGradient id="hullG2" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#ffffff" stop-opacity="0.85"/>
+              <stop offset="100%" stop-color="#d0e8ff" stop-opacity="0.7"/>
+            </linearGradient>
+          </defs>
+          <rect width="480" height="408" fill="url(#wg)"/>
+          <!-- Grid lines -->
+          <line x1="0" y1="100" x2="480" y2="100" stroke="rgba(0,212,255,.035)" stroke-width=".5"/>
+          <line x1="0" y1="200" x2="480" y2="200" stroke="rgba(0,212,255,.035)" stroke-width=".5"/>
+          <line x1="0" y1="300" x2="480" y2="300" stroke="rgba(0,212,255,.035)" stroke-width=".5"/>
+          <line x1="120" y1="0" x2="120" y2="408" stroke="rgba(0,212,255,.035)" stroke-width=".5"/>
+          <line x1="240" y1="0" x2="240" y2="408" stroke="rgba(0,212,255,.035)" stroke-width=".5"/>
+          <line x1="360" y1="0" x2="360" y2="408" stroke="rgba(0,212,255,.035)" stroke-width=".5"/>
+
+          <!-- Water surface -->
+          <path d="M0,248 Q80,235 160,248 Q240,261 320,248 Q400,235 480,248" stroke="rgba(0,212,255,.22)" stroke-width="1.2" fill="none"/>
+          <path d="M0,256 Q80,243 160,256 Q240,269 320,256 Q400,243 480,256" stroke="rgba(0,212,255,.1)" stroke-width="1" fill="none"/>
+          <path d="M0,248 Q80,235 160,248 Q240,261 320,248 Q400,235 480,248 L480,408 L0,408 Z" fill="rgba(0,80,150,.05)"/>
+
+          <!-- Hull shadow/reflection -->
+          <ellipse cx="240" cy="262" rx="128" ry="10" fill="rgba(0,0,0,.35)"/>
+
+          <!-- ── CYLINDRICAL HULL (torpedo/tube shape) ── -->
+          <!-- Main cylinder body -->
+          <ellipse cx="240" cy="200" rx="130" ry="44" fill="url(#hullG)" stroke="rgba(0,212,255,.35)" stroke-width="1"/>
+          <!-- White accent stripe along top -->
+          <ellipse cx="240" cy="180" rx="130" ry="14" fill="url(#hullG2)" opacity=".7"/>
+          <!-- Cylinder side rectangle -->
+          <rect x="110" y="200" width="260" height="44" fill="url(#hullG)" stroke="rgba(0,212,255,.2)" stroke-width=".5"/>
+          <!-- Bottom of cylinder -->
+          <ellipse cx="240" cy="244" rx="130" ry="44" fill="#0a1e40" stroke="rgba(0,212,255,.25)" stroke-width=".75"/>
+
+          <!-- Cone nose (right side) -->
+          <path d="M370,200 Q420,200 448,222 Q420,244 370,244 Z" fill="#152e58" stroke="rgba(0,212,255,.3)" stroke-width="1"/>
+          <!-- Cone nose tip -->
+          <ellipse cx="448" cy="222" rx="6" ry="3" fill="rgba(0,212,255,.5)"/>
+
+          <!-- Cone tail (left side) -->
+          <path d="M110,200 Q70,200 44,222 Q70,244 110,244 Z" fill="#152e58" stroke="rgba(0,212,255,.25)" stroke-width="1"/>
+
+          <!-- Electronics dome on top -->
+          <ellipse cx="240" cy="182" rx="55" ry="20" fill="rgba(10,28,58,.95)" stroke="rgba(0,212,255,.4)" stroke-width="1"/>
+          <!-- Dome top line detail -->
+          <ellipse cx="240" cy="178" rx="40" ry="10" fill="rgba(0,212,255,.04)" stroke="rgba(0,212,255,.2)" stroke-width=".5"/>
+
+          <!-- GPS antenna on dome -->
+          <line x1="240" y1="130" x2="240" y2="170" stroke="rgba(0,212,255,.55)" stroke-width="1.5"/>
+          <circle cx="240" cy="130" r="5" fill="var(--cyan)" opacity=".85">
+            <animate attributeName="opacity" values=".85;.25;.85" dur="1.8s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="240" cy="130" r="11" fill="none" stroke="var(--cyan)" stroke-width=".5" opacity=".3">
+            <animate attributeName="r" values="10;20;10" dur="1.8s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values=".3;0;.3" dur="1.8s" repeatCount="indefinite"/>
+          </circle>
+
+          <!-- Sensor arm left -->
+          <line x1="165" y1="182" x2="140" y2="165" stroke="rgba(0,212,255,.35)" stroke-width="1"/>
+          <circle cx="138" cy="163" r="5" fill="rgba(8,21,42,.95)" stroke="rgba(0,212,255,.4)" stroke-width="1"/>
+          <!-- Sensor arm right -->
+          <line x1="315" y1="182" x2="340" y2="165" stroke="rgba(0,212,255,.35)" stroke-width="1"/>
+          <circle cx="342" cy="163" r="5" fill="rgba(8,21,42,.95)" stroke="rgba(0,212,255,.4)" stroke-width="1"/>
+
+          <!-- Water probe hanging down from hull bottom -->
+          <line x1="200" y1="244" x2="200" y2="278" stroke="rgba(0,196,180,.45)" stroke-width="1" stroke-dasharray="3,2"/>
+          <circle cx="200" cy="280" r="5" fill="rgba(0,196,180,.2)" stroke="rgba(0,196,180,.5)" stroke-width="1"/>
+          <line x1="260" y1="244" x2="260" y2="272" stroke="rgba(0,196,180,.35)" stroke-width="1" stroke-dasharray="3,2"/>
+          <circle cx="260" cy="274" r="4" fill="rgba(0,196,180,.15)" stroke="rgba(0,196,180,.4)" stroke-width="1"/>
+
+          <!-- Propeller disc behind tail -->
+          <ellipse cx="50" cy="222" rx="22" ry="6" fill="rgba(0,212,255,.08)" stroke="rgba(0,212,255,.25)" stroke-width=".75">
+            <animateTransform attributeName="transform" type="rotate" from="0 50 222" to="360 50 222" dur=".4s" repeatCount="indefinite"/>
+          </ellipse>
+          <ellipse cx="50" cy="222" rx="22" ry="6" fill="none" stroke="rgba(0,212,255,.15)" stroke-width=".5" stroke-dasharray="5,5">
+            <animateTransform attributeName="transform" type="rotate" from="180 50 222" to="540 50 222" dur=".4s" repeatCount="indefinite"/>
+          </ellipse>
+
+          <!-- Sonar rings -->
+          <ellipse cx="240" cy="256" rx="22" ry="5" fill="none" stroke="rgba(0,212,255,.4)" stroke-width="1">
+            <animate attributeName="rx" values="22;110;22" dur="3s" repeatCount="indefinite"/>
+            <animate attributeName="ry" values="5;22;5" dur="3s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values=".4;0;.4" dur="3s" repeatCount="indefinite"/>
+          </ellipse>
+          <ellipse cx="240" cy="256" rx="22" ry="5" fill="none" stroke="rgba(0,212,255,.2)" stroke-width=".75">
+            <animate attributeName="rx" values="22;110;22" dur="3s" begin="1.5s" repeatCount="indefinite"/>
+            <animate attributeName="ry" values="5;22;5" dur="3s" begin="1.5s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values=".2;0;.2" dur="3s" begin="1.5s" repeatCount="indefinite"/>
+          </ellipse>
+
+          <!-- Telemetry particles rising -->
+          <circle cx="100" cy="200" r="1.8" fill="var(--cyan)" opacity="0">
+            <animate attributeName="cy" values="210;140;210" dur="3s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0;.6;0" dur="3s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="380" cy="205" r="1.5" fill="var(--teal)" opacity="0">
+            <animate attributeName="cy" values="215;138;215" dur="2.7s" begin=".8s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0;.5;0" dur="2.7s" begin=".8s" repeatCount="indefinite"/>
+          </circle>
+
+          <!-- Floating debris particles -->
+          <rect x="55" y="256" width="10" height="4" rx="1" fill="rgba(200,160,100,.25)"/>
+          <circle cx="40" cy="263" r="4" fill="rgba(180,140,90,.18)"/>
+          <rect x="420" y="260" width="8" height="3" rx="1" fill="rgba(200,160,100,.2)"/>
+
+          <!-- Ultrasonic label -->
+          <text x="448" y="210" font-family="monospace" font-size="7" fill="rgba(0,212,255,.4)">US</text>
+          <text x="448" y="236" font-family="monospace" font-size="7" fill="rgba(0,212,255,.4)">FWD</text>
+
+          <!-- ESP32 label on dome -->
+          <text x="224" y="184" font-family="monospace" font-size="7" fill="rgba(0,212,255,.5)" text-anchor="middle">ESP32</text>
+        </svg>
+      </div>
+
+      <!-- Competition detail card -->
+      <div style="margin-top:16px;background:var(--d3);border:1px solid var(--border);border-radius:14px;padding:20px 24px;display:flex;align-items:center;gap:16px;" class="reveal d4">
+        <div style="width:44px;height:44px;border-radius:10px;background:rgba(0,212,255,.07);border:1px solid rgba(0,212,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <div>
+          <div style="font-size:.875rem;font-weight:600;color:var(--tp);margin-bottom:3px;">Innovation World Cup</div>
+          <div style="font-size:.75rem;color:var(--ts);">Selling Price: 50K BDT (USD 460) &nbsp;·&nbsp; Production Cost: 35K BDT (USD 320)</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="dv" style="background:var(--d0)">
+  <svg viewBox="0 0 1440 60" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,32 C480,60 960,0 1440,40 L1440,60 L0,60 Z" fill="var(--d2)"/>
+  </svg>
+</div>
+
+<!-- ── SKY CLEANSE ─────────────────────────────────── -->
+<div id="skycleanse" class="ps" style="background:var(--d2)">
+  <div class="pi flip">
+
+    <!-- Left: Content -->
+    <div>
+      <div class="ptag tl reveal">Project 02 — Sky Cleanse</div>
+      <h2 class="ptitle reveal d1">Semi-Automated Environmental Drone</h2>
+      <p class="pdesc reveal d2">
+        Sky Cleanse is an aerial drone that simultaneously monitors air quality, purifies polluted
+        air through a MOXI filter system, and supports precision crop fertilization. Equipped with
+        five specialized atmospheric sensors, it gathers real-time data on particulate matter,
+        toxic gases, CO₂, temperature, and humidity — acting as both a monitor and a purifier.
+      </p>
+
+      <!-- Operating modes -->
+      <div class="reveal d2" style="margin-bottom:28px;">
+        <div style="font-size:.75rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ts);margin-bottom:12px;">Capabilities</div>
+        <div class="modes">
+          <div class="mode-tag"><div class="mode-dot tl"></div>Air Quality Monitoring</div>
+          <div class="mode-tag"><div class="mode-dot tl"></div>MOXI Air Purification</div>
+          <div class="mode-tag"><div class="mode-dot tl"></div>Crop Fertilization</div>
+          <div class="mode-tag"><div class="mode-dot tl"></div>Manual Override</div>
+        </div>
+      </div>
+
+      <!-- Sensors -->
+      <div class="reveal d3" style="margin-bottom:10px;">
+        <div style="font-size:.75rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ts);margin-bottom:12px;">Atmospheric Sensors</div>
+        <div class="sensor-row">
+          <div class="chip tl">PMS7003</div>
+          <div class="chip tl">MQ-7</div>
+          <div class="chip tl">MQ-135</div>
+          <div class="chip tl">DHT-22</div>
+          <div class="chip tl">MH-Z19E</div>
+        </div>
+      </div>
+
+      <!-- Sensor detail cards -->
+      <div class="sensor-cards reveal d3">
+        <div class="sc-card">
+          <div class="spec-dot tl" style="width:7px;height:7px;border-radius:50%;flex-shrink:0;"></div>
+          <div class="sc-name">PMS7003</div>
+          <div class="sc-what">PM1.0, PM2.5, PM10 particulate matter detection</div>
+        </div>
+        <div class="sc-card">
+          <div class="spec-dot tl" style="width:7px;height:7px;border-radius:50%;flex-shrink:0;"></div>
+          <div class="sc-name">MQ-7</div>
+          <div class="sc-what">Carbon monoxide (CO) gas concentration measurement</div>
+        </div>
+        <div class="sc-card">
+          <div class="spec-dot tl" style="width:7px;height:7px;border-radius:50%;flex-shrink:0;"></div>
+          <div class="sc-name">MQ-135</div>
+          <div class="sc-what">Harmful gas detection and overall air quality index</div>
+        </div>
+        <div class="sc-card">
+          <div class="spec-dot tl" style="width:7px;height:7px;border-radius:50%;flex-shrink:0;"></div>
+          <div class="sc-name">DHT-22</div>
+          <div class="sc-what">Ambient temperature and relative humidity</div>
+        </div>
+        <div class="sc-card">
+          <div class="spec-dot tl" style="width:7px;height:7px;border-radius:50%;flex-shrink:0;"></div>
+          <div class="sc-name">MH-Z19E</div>
+          <div class="sc-what">Carbon dioxide (CO₂) concentration — greenhouse gas tracking</div>
+        </div>
+      </div>
+
+      <!-- Key features -->
+      <div class="spec-grid reveal d4" style="margin-top:28px;">
+        <div class="spec-item"><div class="spec-dot tl"></div>MOXI Filter + Fan Air Purification</div>
+        <div class="spec-item"><div class="spec-dot tl"></div>3D-Printed Filter Housing (modular)</div>
+        <div class="spec-item"><div class="spec-dot tl"></div>5V DC Water Pump (fertilization)</div>
+        <div class="spec-item"><div class="spec-dot tl"></div>Targeted Spray Nozzle System</div>
+        <div class="spec-item"><div class="spec-dot tl"></div>Real-Time Pollutant Analysis</div>
+        <div class="spec-item"><div class="spec-dot tl"></div>Manual Fertilization Control</div>
+      </div>
+    </div>
+
+    <!-- Right: Visual -->
+    <div class="reveal d2">
+      <div class="vbox">
+        <svg viewBox="0 0 480 408" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="sg" cx="50%" cy="40%" r="75%">
+              <stop offset="0%" stop-color="#041420"/>
+              <stop offset="100%" stop-color="#020810"/>
+            </radialGradient>
+          </defs>
+          <rect width="480" height="408" fill="url(#sg)"/>
+          <!-- Grid -->
+          <line x1="0" y1="100" x2="480" y2="100" stroke="rgba(0,196,180,.03)" stroke-width=".5"/>
+          <line x1="0" y1="200" x2="480" y2="200" stroke="rgba(0,196,180,.03)" stroke-width=".5"/>
+          <line x1="0" y1="300" x2="480" y2="300" stroke="rgba(0,196,180,.03)" stroke-width=".5"/>
+          <line x1="120" y1="0" x2="120" y2="408" stroke="rgba(0,196,180,.03)" stroke-width=".5"/>
+          <line x1="240" y1="0" x2="240" y2="408" stroke="rgba(0,196,180,.03)" stroke-width=".5"/>
+          <line x1="360" y1="0" x2="360" y2="408" stroke="rgba(0,196,180,.03)" stroke-width=".5"/>
+
+          <!-- Atmospheric particles -->
+          <circle cx="48" cy="70" r="2" fill="rgba(0,196,180,.4)">
+            <animate attributeName="cy" values="70;48;70" dur="4.5s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values=".4;.8;.4" dur="4.5s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="430" cy="85" r="1.5" fill="rgba(0,212,255,.3)">
+            <animate attributeName="cy" values="85;60;85" dur="5s" begin="1s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="60" cy="340" r="2" fill="rgba(0,196,180,.25)">
+            <animate attributeName="cy" values="340;310;340" dur="5.5s" begin="2s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="420" cy="330" r="1.5" fill="rgba(0,212,255,.2)">
+            <animate attributeName="cy" values="330;305;330" dur="4.8s" begin=".5s" repeatCount="indefinite"/>
+          </circle>
+
+          <!-- Drone group (floating) -->
+          <g>
+            <animateTransform attributeName="transform" type="translate"
+              values="0,0; 0,-10; 0,0" dur="3.5s" repeatCount="indefinite"
+              calcMode="spline" keySplines=".4 0 .2 1;.4 0 .2 1"/>
+
+            <!-- Arms -->
+            <line x1="240" y1="194" x2="126" y2="152" stroke="rgba(0,196,180,.55)" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="240" y1="194" x2="354" y2="152" stroke="rgba(0,196,180,.55)" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="240" y1="194" x2="126" y2="236" stroke="rgba(0,196,180,.55)" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="240" y1="194" x2="354" y2="236" stroke="rgba(0,196,180,.55)" stroke-width="2.5" stroke-linecap="round"/>
+
+            <!-- Motor housings -->
+            <circle cx="122" cy="149" r="15" fill="rgba(7,17,36,.95)" stroke="rgba(0,196,180,.45)" stroke-width="1.5"/>
+            <circle cx="358" cy="149" r="15" fill="rgba(7,17,36,.95)" stroke="rgba(0,196,180,.45)" stroke-width="1.5"/>
+            <circle cx="122" cy="239" r="15" fill="rgba(7,17,36,.95)" stroke="rgba(0,196,180,.45)" stroke-width="1.5"/>
+            <circle cx="358" cy="239" r="15" fill="rgba(7,17,36,.95)" stroke="rgba(0,196,180,.45)" stroke-width="1.5"/>
+
+            <!-- Propellers -->
+            <ellipse cx="122" cy="149" rx="36" ry="3.5" fill="rgba(0,196,180,.1)" stroke="rgba(0,196,180,.3)" stroke-width=".75">
+              <animateTransform attributeName="transform" type="rotate" from="0 122 149" to="360 122 149" dur=".28s" repeatCount="indefinite"/>
+            </ellipse>
+            <ellipse cx="358" cy="149" rx="36" ry="3.5" fill="rgba(0,212,255,.1)" stroke="rgba(0,212,255,.3)" stroke-width=".75">
+              <animateTransform attributeName="transform" type="rotate" from="360 358 149" to="0 358 149" dur=".32s" repeatCount="indefinite"/>
+            </ellipse>
+            <ellipse cx="122" cy="239" rx="36" ry="3.5" fill="rgba(0,212,255,.1)" stroke="rgba(0,212,255,.3)" stroke-width=".75">
+              <animateTransform attributeName="transform" type="rotate" from="360 122 239" to="0 122 239" dur=".3s" repeatCount="indefinite"/>
+            </ellipse>
+            <ellipse cx="358" cy="239" rx="36" ry="3.5" fill="rgba(0,196,180,.1)" stroke="rgba(0,196,180,.3)" stroke-width=".75">
+              <animateTransform attributeName="transform" type="rotate" from="0 358 239" to="360 358 239" dur=".26s" repeatCount="indefinite"/>
+            </ellipse>
+
+            <!-- Central body -->
+            <rect x="210" y="172" width="60" height="44" rx="9" fill="rgba(7,17,36,.98)" stroke="rgba(0,196,180,.5)" stroke-width="1.5"/>
+            <line x1="218" y1="184" x2="262" y2="184" stroke="rgba(0,196,180,.12)" stroke-width=".5"/>
+            <line x1="218" y1="204" x2="262" y2="204" stroke="rgba(0,196,180,.12)" stroke-width=".5"/>
+
+            <!-- LED -->
+            <circle cx="240" cy="174" r="3.5" fill="var(--teal)" opacity=".9">
+              <animate attributeName="opacity" values=".9;.2;.9" dur="1.6s" repeatCount="indefinite"/>
+            </circle>
+
+            <!-- Camera/sensor gimbal -->
+            <circle cx="240" cy="220" r="10" fill="rgba(5,14,32,.98)" stroke="rgba(0,196,180,.4)" stroke-width="1"/>
+            <circle cx="240" cy="220" r="6" fill="rgba(0,196,180,.08)" stroke="rgba(0,196,180,.3)" stroke-width=".75"/>
+            <circle cx="240" cy="220" r="3" fill="rgba(0,196,180,.3)"/>
+
+            <!-- MOXI filter housing below body (3D-printed box) -->
+            <rect x="220" y="230" width="40" height="28" rx="5" fill="rgba(5,14,32,.9)" stroke="rgba(0,196,180,.35)" stroke-width="1" stroke-dasharray="2,2"/>
+            <!-- Filter grid pattern -->
+            <line x1="228" y1="230" x2="228" y2="258" stroke="rgba(0,196,180,.15)" stroke-width=".5"/>
+            <line x1="236" y1="230" x2="236" y2="258" stroke="rgba(0,196,180,.15)" stroke-width=".5"/>
+            <line x1="244" y1="230" x2="244" y2="258" stroke="rgba(0,196,180,.15)" stroke-width=".5"/>
+            <line x1="252" y1="230" x2="252" y2="258" stroke="rgba(0,196,180,.15)" stroke-width=".5"/>
+            <line x1="220" y1="238" x2="260" y2="238" stroke="rgba(0,196,180,.15)" stroke-width=".5"/>
+            <line x1="220" y1="246" x2="260" y2="246" stroke="rgba(0,196,180,.15)" stroke-width=".5"/>
+            <!-- Filter label -->
+            <text x="240" y="270" font-family="monospace" font-size="6" fill="rgba(0,196,180,.45)" text-anchor="middle">MOXI FILTER</text>
+
+            <!-- Fertilizer tank on side -->
+            <rect x="176" y="183" width="28" height="22" rx="4" fill="rgba(5,14,32,.9)" stroke="rgba(0,196,180,.25)" stroke-width=".75"/>
+            <text x="190" y="196" font-family="monospace" font-size="5" fill="rgba(0,196,180,.4)" text-anchor="middle">TANK</text>
+            <!-- Pump pipe -->
+            <line x1="190" y1="205" x2="190" y2="218" stroke="rgba(0,196,180,.3)" stroke-width=".75"/>
+            <!-- Nozzle drip -->
+            <circle cx="190" cy="220" r="2" fill="rgba(0,196,180,.3)" opacity=".6">
+              <animate attributeName="cy" values="220;235;220" dur="1.5s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values=".6;0;.6" dur="1.5s" repeatCount="indefinite"/>
+            </circle>
+          </g>
+
+          <!-- Scan rings -->
+          <ellipse cx="240" cy="268" rx="32" ry="7" fill="none" stroke="rgba(0,196,180,.35)" stroke-width="1">
+            <animate attributeName="rx" values="32;130;32" dur="3.2s" repeatCount="indefinite"/>
+            <animate attributeName="ry" values="7;26;7" dur="3.2s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values=".35;0;.35" dur="3.2s" repeatCount="indefinite"/>
+          </ellipse>
+          <ellipse cx="240" cy="268" rx="32" ry="7" fill="none" stroke="rgba(0,196,180,.18)" stroke-width=".75">
+            <animate attributeName="rx" values="32;130;32" dur="3.2s" begin="1.6s" repeatCount="indefinite"/>
+            <animate attributeName="ry" values="7;26;7" dur="3.2s" begin="1.6s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values=".18;0;.18" dur="3.2s" begin="1.6s" repeatCount="indefinite"/>
+          </ellipse>
+
+          <!-- Ground target -->
+          <line x1="0" y1="370" x2="480" y2="370" stroke="rgba(0,196,180,.08)" stroke-width=".5" stroke-dasharray="16,16"/>
+          <circle cx="240" cy="370" r="20" fill="none" stroke="rgba(0,196,180,.18)" stroke-width="1" stroke-dasharray="5,5"/>
+          <circle cx="240" cy="370" r="10" fill="none" stroke="rgba(0,196,180,.12)" stroke-width=".75"/>
+          <circle cx="240" cy="370" r="3" fill="rgba(0,196,180,.3)"/>
+          <line x1="240" y1="268" x2="240" y2="370" stroke="rgba(0,196,180,.06)" stroke-width=".5" stroke-dasharray="4,4"/>
+        </svg>
+      </div>
+
+      <!-- Air purification detail card -->
+      <div style="margin-top:16px;background:var(--d3);border:1px solid rgba(0,196,180,.15);border-radius:14px;padding:20px 24px;display:flex;align-items:center;gap:16px;" class="reveal d4">
+        <div style="width:44px;height:44px;border-radius:10px;background:rgba(0,196,180,.07);border:1px solid rgba(0,196,180,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0"/><path d="M12 8v4l3 3"/></svg>
+        </div>
+        <div>
+          <div style="font-size:.875rem;font-weight:600;color:var(--tp);margin-bottom:3px;">MOXI Filter + Fan System</div>
+          <div style="font-size:.75rem;color:var(--ts);">3D-printed housing — screwable for easy filter replacement and maintenance</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="dv" style="background:var(--d2)">
+  <svg viewBox="0 0 1440 60" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,24 C360,60 720,0 1080,44 C1260,60 1380,20 1440,36 L1440,60 L0,60 Z" fill="var(--d1)"/>
+  </svg>
+</div>
+
+<!-- ── SDG ALIGNMENT ───────────────────────────────── -->
+<section id="sdg" style="background:var(--d1)">
+  <div class="ctn">
+    <div class="sdg-head">
+      <div class="badge reveal" style="justify-content:center">UN Sustainable Development Goals</div>
+      <h2 class="s-title reveal d1">Aligned with Global Climate Action</h2>
+      <p class="s-desc reveal d2">
+        Both Skycleanse platforms were engineered with the United Nations SDGs at the core of
+        every design decision. Our work directly advances five global goals.
+      </p>
+    </div>
+    <div class="sdg-grid">
+      <!-- SDG 3 -->
+      <div class="sdg-card reveal" style="background:rgba(76,159,56,.07);border-color:rgba(76,159,56,.2);">
+        <div class="sdg-icon" style="background:rgba(76,159,56,.12);border:1px solid rgba(76,159,56,.25);">
+          <svg viewBox="0 0 24 24" style="stroke:var(--sdg3);"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
+        <div class="sdg-num" style="color:var(--sdg3);">3</div>
+        <div class="sdg-goal" style="color:var(--sdg3);">Good Health</div>
+        <p class="sdg-desc">Monitoring CO, CO₂, and PM2.5 pollutants. Air purification reduces respiratory harm in communities.</p>
+        <div class="sdg-tag"><span class="sdg-chip" style="color:var(--teal);border-color:rgba(0,196,180,.3);">Sky Cleanse</span></div>
+      </div>
+      <!-- SDG 6 -->
+      <div class="sdg-card reveal d1" style="background:rgba(38,189,226,.07);border-color:rgba(38,189,226,.2);">
+        <div class="sdg-icon" style="background:rgba(38,189,226,.12);border:1px solid rgba(38,189,226,.25);">
+          <svg viewBox="0 0 24 24" style="stroke:var(--sdg6);"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+        </div>
+        <div class="sdg-num" style="color:var(--sdg6);">6</div>
+        <div class="sdg-goal" style="color:var(--sdg6);">Clean Water</div>
+        <p class="sdg-desc">Real-time pH, TDS, and turbidity monitoring. Targeted water treatment and pollution data collection.</p>
+        <div class="sdg-tag"><span class="sdg-chip" style="color:var(--cyan);border-color:rgba(0,212,255,.3);">Riverix</span></div>
+      </div>
+      <!-- SDG 11 -->
+      <div class="sdg-card reveal d2" style="background:rgba(253,157,36,.07);border-color:rgba(253,157,36,.2);">
+        <div class="sdg-icon" style="background:rgba(253,157,36,.12);border:1px solid rgba(253,157,36,.25);">
+          <svg viewBox="0 0 24 24" style="stroke:var(--sdg11);"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        </div>
+        <div class="sdg-num" style="color:var(--sdg11);">11</div>
+        <div class="sdg-goal" style="color:var(--sdg11);">Sustainable Cities</div>
+        <p class="sdg-desc">Pollution mapping in urban waterways and air corridors. Supports smart-city environmental monitoring systems.</p>
+        <div class="sdg-tag">
+          <span class="sdg-chip" style="color:var(--cyan);border-color:rgba(0,212,255,.3);">Riverix</span>
+          <span class="sdg-chip" style="color:var(--teal);border-color:rgba(0,196,180,.3);">Sky Cleanse</span>
+        </div>
+      </div>
+      <!-- SDG 13 -->
+      <div class="sdg-card reveal d3" style="background:rgba(63,126,68,.07);border-color:rgba(63,126,68,.2);">
+        <div class="sdg-icon" style="background:rgba(63,126,68,.12);border:1px solid rgba(63,126,68,.25);">
+          <svg viewBox="0 0 24 24" style="stroke:var(--sdg13);"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        </div>
+        <div class="sdg-num" style="color:var(--sdg13);">13</div>
+        <div class="sdg-goal" style="color:var(--sdg13);">Climate Action</div>
+        <p class="sdg-desc">CO₂ greenhouse gas tracking. Real-time environmental data raises awareness and supports active intervention.</p>
+        <div class="sdg-tag">
+          <span class="sdg-chip" style="color:var(--cyan);border-color:rgba(0,212,255,.3);">Riverix</span>
+          <span class="sdg-chip" style="color:var(--teal);border-color:rgba(0,196,180,.3);">Sky Cleanse</span>
+        </div>
+      </div>
+      <!-- SDG 15 -->
+      <div class="sdg-card reveal d4" style="background:rgba(86,192,43,.07);border-color:rgba(86,192,43,.2);">
+        <div class="sdg-icon" style="background:rgba(86,192,43,.12);border:1px solid rgba(86,192,43,.25);">
+          <svg viewBox="0 0 24 24" style="stroke:var(--sdg15);"><path d="M17 8C8 10 5.9 16.17 3.82 19H2l1.5-4.5M17 8l-2 8m2-8 2 7"/><path d="M7 12c2-2 4-4 7-4"/></svg>
+        </div>
+        <div class="sdg-num" style="color:var(--sdg15);">15</div>
+        <div class="sdg-goal" style="color:var(--sdg15);">Life on Land</div>
+        <p class="sdg-desc">Precision crop fertilization reduces agricultural waste and supports healthier, more sustainable farming practices.</p>
+        <div class="sdg-tag"><span class="sdg-chip" style="color:var(--teal);border-color:rgba(0,196,180,.3);">Sky Cleanse</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="dv" style="background:var(--d1)">
+  <svg viewBox="0 0 1440 60" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,40 C480,0 960,60 1440,20 L1440,60 L0,60 Z" fill="var(--d0)"/>
+  </svg>
+</div>
+
+<!-- ── TECHNOLOGY ─────────────────────────────────── -->
+<section id="tech" style="background:var(--d0)">
+  <div class="ctn">
+    <div class="tech-head">
+      <div class="badge reveal" style="justify-content:center">Core Technology</div>
+      <h2 class="s-title reveal d1">Engineering Behind the Mission</h2>
+      <p class="s-desc reveal d2">
+        Both platforms leverage complementary technologies that form a complete environmental
+        intelligence and remediation ecosystem.
+      </p>
+    </div>
+    <div class="tech-grid">
+      <div class="tc reveal">
+        <div class="ti"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg></div>
+        <div class="tn">ESP32 Microcontroller</div>
+        <p class="td">The brain of Riverix — handling GPS processing, PID navigation, sensor fusion, obstacle avoidance, telemetry, and pump control simultaneously via real-time multitasking.</p>
+      </div>
+      <div class="tc reveal d1">
+        <div class="ti"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg></div>
+        <div class="tn">GPS + IMU Navigation</div>
+        <p class="td">Coordinate-based waypoint tracking with MPU6050 (accelerometer + gyroscope) and HMC5883L compass for heading accuracy. PID controller minimizes angular error continuously.</p>
+      </div>
+      <div class="tc reveal d2">
+        <div class="ti"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+        <div class="tn">Multi-Sensor Arrays</div>
+        <p class="td">Nine sensors across both platforms: pH, TDS, turbidity, temperature (water) + PMS7003, MQ-7, MQ-135, DHT-22, MH-Z19E (air) — delivering continuous environmental intelligence.</p>
+      </div>
+      <div class="tc reveal d1">
+        <div class="ti"><svg viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg></div>
+        <div class="tn">ESP-NOW Telemetry</div>
+        <p class="td">Low-latency peer-to-peer wireless communication streams GPS coordinates, sensor readings, motor status, and obstacle data to the ground control station in real time.</p>
+      </div>
+      <div class="tc reveal d2">
+        <div class="ti"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
+        <div class="tn">Modular 3D-Printed Parts</div>
+        <p class="td">Custom brackets, MOXI filter housings, and sensor mounts are 3D-printed for lightweight construction, precise fitment, and easy field replacement without specialist tools.</p>
+      </div>
+      <div class="tc reveal d3">
+        <div class="ti"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+        <div class="tn">Web Ground Control Station</div>
+        <p class="td">A live dashboard accessible via Wi-Fi shows real-time map positioning, sensor charts, waypoint management, pump control, and autonomous mission triggers for Riverix.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="dv" style="background:var(--d0)">
+  <svg viewBox="0 0 1440 60" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,32 C360,0 720,60 1080,24 C1260,8 1380,48 1440,32 L1440,60 L0,60 Z" fill="var(--d1)"/>
+  </svg>
+</div>
+
+<!-- ── TEAM ────────────────────────────────────────── -->
+<section id="team" style="background:var(--d1)">
+  <div class="ctn">
+    <div class="team-head">
+      <div class="badge reveal" style="justify-content:center">The Team</div>
+      <h2 class="s-title reveal d1">Built by Passionate Engineers</h2>
+      <p class="s-desc reveal d2" style="max-width:480px;margin:0 auto;">
+        Skycleanse was conceived, designed, and built by two students determined to
+        engineer real solutions for real environmental problems.
+      </p>
+    </div>
+    <div class="team-grid reveal d2">
+      <div class="tm-card">
+        <div class="tm-avatar">SC</div>
+        <div class="tm-name">Shreyan Chakraborty</div>
+        <div class="tm-role">Engineer &amp; <span>Co-Founder</span></div>
+      </div>
+      <div class="tm-card">
+        <div class="tm-avatar">FS</div>
+        <div class="tm-name">Farhan Saif</div>
+        <div class="tm-role">Engineer &amp; <span>Co-Founder</span></div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:40px;" class="reveal d3">
+      <p style="font-size:.8125rem;color:var(--tm);line-height:1.7;">
+        With gratitude to Md. Moin Uddin, Mahadir Islam, and Ahnaf Safwan Islam<br>for their valuable guidance, feedback, and academic support.
+      </p>
+    </div>
+  </div>
+</section>
+
+<div class="dv" style="background:var(--d1)">
+  <svg viewBox="0 0 1440 60" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,40 C480,0 960,60 1440,20 L1440,60 L0,60 Z" fill="var(--d0)"/>
+  </svg>
+</div>
+
+<!-- ── IMPACT ──────────────────────────────────────── -->
+<section id="impact" style="background:var(--d0);text-align:center;">
+  <div class="ctn">
+    <div class="imp-head">
+      <div class="badge reveal" style="justify-content:center">Project Scale</div>
+      <h2 class="s-title reveal d1">The Numbers Behind the Mission</h2>
+      <p class="s-desc reveal d2" style="max-width:520px;margin:0 auto;">
+        Built for real-world deployment, Skycleanse platforms are engineered to deliver
+        measurable, scalable environmental outcomes from day one.
+      </p>
+    </div>
+    <div class="stats reveal d2">
+      <div class="st">
+        <div class="st-n" data-target="5">0</div>
+        <div class="st-l">Atmospheric<br>Sensors (Drone)</div>
+      </div>
+      <div class="st">
+        <div class="st-n" data-target="4">0</div>
+        <div class="st-l">Water Quality<br>Sensors (Riverix)</div>
+      </div>
+      <div class="st">
+        <div class="st-n" data-target="5">0</div>
+        <div class="st-l">UN SDGs<br>Addressed</div>
+      </div>
+      <div class="st">
+        <div class="st-n" data-target="520">0</div>
+        <div class="st-l">Annual Units<br>Forecasted</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ─────────────────────────────────────── -->
+<footer>
+  <div class="fi">
+    <div>
+      <div class="fl">Skycleanse</div>
+      <div class="ft">Riverix &amp; Sky Cleanse — Innovation World Cup</div>
+    </div>
+    <ul class="flinks">
+      <li><a href="#problem">Mission</a></li>
+      <li><a href="#riverix">Riverix</a></li>
+      <li><a href="#skycleanse">Sky Cleanse</a></li>
+      <li><a href="#sdg">SDG Goals</a></li>
+      <li><a href="#tech">Technology</a></li>
+      <li><a href="#team">Team</a></li>
+    </ul>
+    <div class="fcp">&copy; 2025 Shreyan Chakraborty &amp; Farhan Saif. All rights reserved.</div>
+  </div>
+</footer>
+
+<!-- ── SCRIPTS ────────────────────────────────────── -->
+<script>
+  /* Preloader */
+  window.addEventListener('load', () => {
+    setTimeout(() => document.getElementById('pre').classList.add('gone'), 1900);
+  });
+
+  /* Scroll progress */
+  const spb = document.getElementById('spb');
+  window.addEventListener('scroll', () => {
+    const s = document.documentElement, tot = s.scrollHeight - s.clientHeight;
+    spb.style.width = (s.scrollTop / tot * 100) + '%';
+  }, { passive: true });
+
+  /* Nav scroll */
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => { nav.classList.toggle('sc', window.scrollY > 60); }, { passive: true });
+
+  /* Mobile menu */
+  const ham = document.getElementById('ham'), mob = document.getElementById('mob');
+  ham.addEventListener('click', () => { ham.classList.toggle('op'); mob.classList.toggle('op'); });
+  document.querySelectorAll('.ml').forEach(a => a.addEventListener('click', () => { ham.classList.remove('op'); mob.classList.remove('op'); }));
+
+  /* Custom cursor */
+  const cur = document.getElementById('cur'), curR = document.getElementById('curR');
+  let mx = -100, my = -100, rx = -100, ry = -100;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  (function loop() {
+    rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+    cur.style.transform  = `translate(${mx - 5}px,${my - 5}px)`;
+    curR.style.transform = `translate(${rx - 18}px,${ry - 18}px)`;
+    requestAnimationFrame(loop);
+  })();
+  document.querySelectorAll('a,button,.tc,.sdg-card,.prob-card,.tm-card').forEach(el => {
+    el.addEventListener('mouseenter', () => { curR.style.width = '52px'; curR.style.height = '52px'; });
+    el.addEventListener('mouseleave', () => { curR.style.width = '36px'; curR.style.height = '36px'; });
+  });
+
+  /* Hero canvas */
+  const canvas = document.getElementById('hc');
+  const ctx = canvas.getContext('2d');
+  let W, H, pts = [];
+
+  function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+
+  class Pt {
+    constructor() { this.init(); }
+    init() {
+      this.x  = Math.random() * W; this.y  = Math.random() * H;
+      this.vx = (Math.random() - .5) * .28; this.vy = (Math.random() - .5) * .28;
+      this.r  = Math.random() * 1.8 + .4;
+      this.a  = Math.random() * .32 + .08;
+      this.c  = Math.random() > .5;
+    }
+    tick() {
+      this.x += this.vx; this.y += this.vy;
+      if (this.x < 0 || this.x > W) this.vx *= -1;
+      if (this.y < 0 || this.y > H) this.vy *= -1;
+    }
+    draw() {
+      ctx.beginPath(); ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+      ctx.fillStyle = this.c ? `rgba(0,212,255,${this.a})` : `rgba(0,196,180,${this.a})`;
+      ctx.fill();
+    }
+  }
+
+  function initPts() {
+    pts = [];
+    const n = Math.min(150, Math.floor(W * H / 9000));
+    for (let i = 0; i < n; i++) pts.push(new Pt());
+  }
+
+  function drawLines() {
+    const md = 130;
+    for (let i = 0; i < pts.length; i++) {
+      for (let j = i + 1; j < pts.length; j++) {
+        const dx = pts[i].x - pts[j].x, dy = pts[i].y - pts[j].y;
+        const d = Math.sqrt(dx*dx + dy*dy);
+        if (d < md) {
+          ctx.beginPath();
+          ctx.moveTo(pts[i].x, pts[i].y);
+          ctx.lineTo(pts[j].x, pts[j].y);
+          ctx.strokeStyle = `rgba(0,212,255,${(1 - d/md) * .065})`;
+          ctx.lineWidth = .5;
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  function frame() {
+    const g = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, W * .75);
+    g.addColorStop(0, 'rgba(4,14,34,.97)');
+    g.addColorStop(1, 'rgba(2,8,16,1)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, W, H);
+    drawLines();
+    pts.forEach(p => { p.tick(); p.draw(); });
+    requestAnimationFrame(frame);
+  }
+
+  resize(); initPts(); frame();
+  window.addEventListener('resize', () => { resize(); initPts(); });
+
+  /* Scroll reveal */
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold: 0.1, rootMargin: '0px 0px -28px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  /* Counter animation */
+  function countUp(el, target) {
+    const dur = 2400, t0 = performance.now();
+    (function f(now) {
+      const p = Math.min((now - t0) / dur, 1);
+      const e = 1 - Math.pow(1 - p, 4);
+      el.textContent = Math.round(e * target);
+      if (p < 1) requestAnimationFrame(f);
+    })(t0);
+  }
+  const cio = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { countUp(e.target, parseInt(e.target.dataset.target, 10)); cio.unobserve(e.target); }
+    });
+  }, { threshold: 0.6 });
+  document.querySelectorAll('.st-n').forEach(el => cio.observe(el));
+
+  /* 3D tilt on tech cards */
+  document.querySelectorAll('.tc').forEach(c => {
+    c.addEventListener('mousemove', e => {
+      const r = c.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - .5;
+      const y = (e.clientY - r.top)  / r.height - .5;
+      c.style.transform = `translateY(-5px) rotateX(${-y*7}deg) rotateY(${x*7}deg)`;
+    });
+    c.addEventListener('mouseleave', () => { c.style.transform = ''; });
+  });
+
+  /* Smooth anchor scrolls */
+  document.querySelectorAll('[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const t = document.querySelector(a.getAttribute('href'));
+      if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth' }); }
+    });
+  });
+</script>
+</body>
+</html>
